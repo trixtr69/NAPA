@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Rebel26 Tips</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--text:#14171a;--mut:#6b7280;--line:#d9dde3;--acc:#0b6b3a;--accbg:#e3f4ea;--warn:#b45309;--warnbg:#fef3c7;--out:#9ca3af}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1013;--card:#181b20;--text:#eef0f2;--mut:#98a0ab;--line:#2c3138;--acc:#4ade80;--accbg:#12301f;--warn:#fbbf24;--warnbg:#3a2c0a;--out:#6b7280}}
+:root[data-theme="dark"]{--bg:#0e1013;--card:#181b20;--text:#eef0f2;--mut:#98a0ab;--line:#2c3138;--acc:#4ade80;--accbg:#12301f;--warn:#fbbf24;--warnbg:#3a2c0a;--out:#6b7280}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:16px/1.4 -apple-system,system-ui,Helvetica,Arial,sans-serif;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+header{padding:12px 14px 4px}
+h1{font-size:20px;margin:0}
+.sub{color:var(--mut);font-size:13px}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:8px 14px;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5;-webkit-overflow-scrolling:touch}
+.tab{flex:0 0 auto;min-width:44px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--text);font-size:16px;font-weight:600}
+.tab.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.tab.done::after{content:" ✓";font-weight:400}
+main{padding:0 14px 40px;max-width:640px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0}
+h2{font-size:15px;margin:0 0 8px}
+table{width:100%;border-collapse:collapse}
+th{font-size:12px;color:var(--mut);font-weight:600;text-align:center;padding:2px}
+th:first-child,td:first-child{text-align:left}
+td{padding:3px 2px}
+td.n{font-weight:600;width:60px}
+input{width:100%;font-size:18px;padding:8px 2px;text-align:center;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text)}
+input.w{text-align:left;padding:8px 10px}
+.row{display:flex;gap:8px;align-items:center}
+.res{width:100%}
+.res td,.res th{border-bottom:1px solid var(--line);padding:8px 4px;text-align:center}
+.res tr.in td{background:var(--accbg)}
+.res tr.cut td{border-bottom:2px dashed var(--acc)}
+.res td.h{font-size:22px;font-weight:700}
+.res input{width:70px;font-size:16px;padding:5px 2px}
+.badge{display:inline-block;font-size:11px;font-weight:700;border-radius:6px;padding:2px 6px;background:var(--warnbg);color:var(--warn)}
+.final{font-size:26px;font-weight:800;letter-spacing:1px;color:var(--acc);word-spacing:8px}
+.msg{font-size:13px;color:var(--warn);margin-top:6px}
+.mut{color:var(--mut);font-size:13px}
+button.r{background:none;border:1px solid var(--line);color:var(--mut);padding:8px 12px;border-radius:8px;font-size:14px}
+textarea{width:100%;font:12px/1.3 ui-monospace,Menlo,monospace;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text)}
+.sr{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.sr .final{font-size:22px}
+.pl{font-size:12px;color:var(--mut);margin-top:4px}
+.row button{margin-right:8px}
+.sc{overflow-x:auto}
+.bd{width:100%;font-size:14px}
+.bd th,.bd td{padding:7px 6px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap}
+.bd th:nth-child(2),.bd td:nth-child(2){text-align:left}
+.bd td.t{font-weight:800;font-size:17px;color:var(--acc)}
+.bd td.me{font-weight:700}
+.pt{width:auto;margin-top:6px;font-size:13px}
+.pt td,.pt th{padding:2px 10px 2px 0;text-align:center}
+.pt td:first-child,.pt th:first-child{text-align:left}
+.x{text-decoration:line-through;color:var(--mut)}
+@media print{
+ body{background:#fff;color:#000}
+ .tabs,.noprint,header .sub{display:none!important}
+ .card{border:1px solid #999;break-inside:avoid;background:#fff}
+ .final{color:#000}
+ .badge{border:1px solid #000;background:#fff;color:#000}
+}
+</style>
+</head>
+<body>
+<header><h1>Rebel26 Tips</h1><div class="sub">3 / 2 / 1 points. 4th tip is the emergency, used only after scratchings.</div></header>
+<div class="tabs" id="tabs"></div>
+<main id="main"></main>
+<script>
+var TIPSTERS=["Cliff","Dick","John","Pat","Rick","Shane"];
+var RACES=10, PTS=[3,2,1], KEY="rebel26tips_v1";
+var data=load(), cur=0;
+
+function blank(){var r=[];for(var i=0;i<RACES;i++){r.push({tips:TIPSTERS.map(function(){return["","","",""]}),scr:"",odds:{},res:["","",""]})}return r}
+function load(){try{var s=localStorage.getItem(KEY);if(s){var d=JSON.parse(s);if(d&&d.length===RACES){d.forEach(function(r){if(!r.res)r.res=["","",""]});return d}}}catch(e){}return blank()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function nums(s){return (s.match(/\d+/g)||[]).map(function(x){return String(parseInt(x,10))})}
+function oddsVal(s){
+  s=String(s||"").trim();if(!s)return null;
+  if(s.indexOf("/")>-1){var p=s.split("/");var a=parseFloat(p[0]),b=parseFloat(p[1]);return(b>0&&a>=0)?a/b+1:null}
+  var v=parseFloat(s);return isNaN(v)?null:v
+}
+
+function compute(r){
+  var scr=nums(r.scr), pts={}, tippers={}, firsts={}, issues=[];
+  r.tips.forEach(function(t,i){
+    var picks=t.map(function(x){return x.trim()===""?null:String(parseInt(x,10))}).filter(function(x){return x&&x!=="NaN"});
+    var seen={},clean=[];
+    picks.forEach(function(p){if(seen[p])issues.push(TIPSTERS[i]+" tipped "+p+" twice");else{seen[p]=1;clean.push(p)}});
+    var live=clean.filter(function(p){return scr.indexOf(p)<0});
+    live.slice(0,3).forEach(function(p,k){
+      pts[p]=(pts[p]||0)+PTS[k];
+      tippers[p]=(tippers[p]||0)+1;
+      if(k===0)firsts[p]=(firsts[p]||0)+1;
+    });
+    if(clean.length>0&&live.length<Math.min(3,clean.length)&&live.length<3&&clean.length<4&&scr.length)issues.push(TIPSTERS[i]+" has fewer than 3 live runners");
+    else if(clean.length>0&&live.length<3)issues.push(TIPSTERS[i]+" has fewer than 3 live tips");
+  });
+  var list=Object.keys(pts).map(function(h){return{h:h,p:pts[h],t:tippers[h],f:firsts[h]||0,o:oddsVal(r.odds[h])}});
+  list.sort(function(a,b){
+    if(b.p!==a.p)return b.p-a.p;
+    if(a.o!==null&&b.o!==null&&a.o!==b.o)return a.o-b.o;
+    return parseInt(a.h,10)-parseInt(b.h,10);
+  });
+  list.forEach(function(x){
+    x.tie=list.some(function(y){return y!==x&&y.p===x.p&&(x.o===null||y.o===null||x.o===y.o)});
+  });
+  return{list:list,issues:issues,scr:scr};
+}
+
+function renderTabs(){
+  var h="";
+  for(var i=0;i<RACES;i++){
+    var any=data[i].tips.some(function(t){return t.some(function(x){return x.trim()!==""})});
+    h+='<button class="tab'+(i===cur?" on":"")+(any?" done":"")+'" data-i="'+i+'">R'+(i+1)+'</button>';
+  }
+  h+='<button class="tab'+(cur===-2?" on":"")+'" data-i="-2">Board</button>';
+  h+='<button class="tab'+(cur===-1?" on":"")+'" data-i="-1">All</button>';
+  var el=document.getElementById("tabs");el.innerHTML=h;
+  [].forEach.call(el.querySelectorAll(".tab"),function(b){b.onclick=function(){cur=parseInt(b.dataset.i,10);renderRace()}});
+  var on=el.querySelector(".on");if(on&&on.scrollIntoView)on.scrollIntoView({inline:"center",block:"nearest"});
+}
+
+function renderRace(){
+  if(cur===-2){renderBoard();return}
+  if(cur===-1){renderSummary();return}
+  var r=data[cur];
+  var h='<div class="card"><h2>Race '+(cur+1)+' tips (runner numbers)</h2><table><tr><th></th><th>1st</th><th>2nd</th><th>3rd</th><th>Emg</th></tr>';
+  TIPSTERS.forEach(function(n,i){
+    h+='<tr><td class="n">'+n+'</td>';
+    for(var k=0;k<4;k++)h+='<td><input inputmode="numeric" pattern="[0-9]*" maxlength="2" data-t="'+i+'" data-k="'+k+'" value="'+esc(r.tips[i][k])+'"></td>';
+    h+='</tr>';
+  });
+  h+='</table></div>';
+  h+='<div class="card"><h2>Scratchings</h2><input class="w" id="scr" inputmode="numeric" placeholder="e.g. 4, 9" value="'+esc(r.scr)+'"></div>';
+  h+='<div id="out"></div>';
+  h+='<div class="card"><h2>Race '+(cur+1)+' result (first three past the post)</h2><table><tr><th>1st</th><th>2nd</th><th>3rd</th></tr><tr>'+[0,1,2].map(function(k){return '<td><input inputmode="numeric" pattern="[0-9]*" maxlength="2" data-res="'+k+'" value="'+esc(r.res[k])+'"></td>'}).join("")+'</tr></table><div id="rpts"></div></div>';
+  h+='<div class="card"><button class="r" id="clr">Clear this race</button></div>';
+  document.getElementById("main").innerHTML=h;
+  [].forEach.call(document.querySelectorAll("input[data-t]"),function(inp){
+    inp.oninput=function(){data[cur].tips[inp.dataset.t][inp.dataset.k]=inp.value;save();renderOut();renderTabs()};
+  });
+  document.getElementById("scr").oninput=function(e){data[cur].scr=e.target.value;save();renderOut()};
+  document.getElementById("clr").onclick=function(){if(confirm("Clear all tips, scratchings and odds for Race "+(cur+1)+"?")){data[cur]={tips:TIPSTERS.map(function(){return["","","",""]}),scr:"",odds:{},res:["","",""]};save();renderRace()}};
+  [].forEach.call(document.querySelectorAll("input[data-res]"),function(inp){
+    inp.oninput=function(){data[cur].res[inp.dataset.res]=inp.value;save();renderRpts();renderTabs()};
+  });
+  renderTabs();renderOut();renderRpts();
+}
+
+function renderOut(){
+  var r=data[cur],c=compute(r),out=document.getElementById("out");
+  if(!c.list.length){out.innerHTML='<div class="card"><h2>Final selections</h2><div class="mut">Enter tips above.</div></div>';return}
+  var top=c.list.slice(0,6);
+  var h='<div class="card"><h2>Race '+(cur+1)+' final selections (top 6)</h2><div class="final">'+top.map(function(x){return x.h}).join(" ")+'</div>';
+  if(c.scr.length)h+='<div class="mut">Scratched: '+c.scr.join(", ")+'</div>';
+  var ties=c.list.slice(0,8).some(function(x,i){return x.tie&&i<7&&(i<6||c.list[5]&&x.p===c.list[5].p)});
+  var cutTie=c.list.length>6&&c.list[5].p===c.list[6].p&&(c.list[5].o===null||c.list[6].o===null);
+  if(cutTie)h+='<div class="msg">⚠ Tie across the cut line. Enter odds for the tied horses below to settle it.</div>';
+  else if(top.some(function(x){return x.tie}))h+='<div class="msg">Ties in the top 6 are ordered by odds where entered; enter odds to fix the order.</div>';
+  if(c.list.length<6)h+='<div class="msg">Only '+c.list.length+' horses tipped so far.</div>';
+  c.issues.forEach(function(m){h+='<div class="msg">⚠ '+esc(m)+'</div>'});
+  h+='</div><div class="card"><h2>Ranking</h2><table class="res"><tr><th>Horse</th><th>Pts</th><th>Tips</th><th>Odds</th><th></th></tr>';
+  c.list.forEach(function(x,i){
+    h+='<tr class="'+(i<6?"in":"")+(i===5&&c.list.length>6?" cut":"")+'"><td class="h">'+x.h+'</td><td>'+x.p+'</td><td>'+x.t+'</td>'
+     +'<td><input inputmode="decimal" placeholder="odds" data-h="'+x.h+'" value="'+esc(r.odds[x.h]||"")+'"></td>'
+     +'<td>'+(x.tie?'<span class="badge">TIE</span>':'')+'</td></tr>';
+  });
+  h+='</table><div class="mut" style="margin-top:8px">Odds as 4.5 or 7/2. Shorter price wins a tie on points.</div></div>';
+  out.innerHTML=h;
+  [].forEach.call(out.querySelectorAll("input[data-h]"),function(inp){
+    inp.onchange=function(){data[cur].odds[inp.dataset.h]=inp.value;save();renderOut()};
+  });
+}
+
+function copyText(t,btn){
+  function done(ok){btn.textContent=ok?"Copied ✓":"Copy blocked, select text manually";setTimeout(function(){btn.textContent=btn.dataset.l},2500)}
+  function fb(){try{var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();var ok=document.execCommand("copy");document.body.removeChild(ta);done(ok)}catch(e){done(false)}}
+  try{navigator.clipboard.writeText(t).then(function(){done(true)},fb)}catch(e){fb()}
+}
+function pickVal(x){var n=parseInt(x,10);return isNaN(n)?"":String(n)}
+function punterTable(i,c){
+  var h='<table class="pt"><tr><th></th><th>1st</th><th>2nd</th><th>3rd</th><th>Emg</th></tr>';
+  TIPSTERS.forEach(function(n,t){
+    h+='<tr><td>'+n+'</td>'+data[i].tips[t].map(function(x){var v=pickVal(x);var sc=v&&c.scr.indexOf(v)>-1;return '<td'+(sc?' class="x"':'')+'>'+(v||"·")+'</td>'}).join("")+'</tr>';
+  });
+  return h+'</table>';
+}
+function summaryText(){
+  var L=["REBEL26 TIPS"];
+  for(var i=0;i<RACES;i++){
+    var c=compute(data[i]);
+    if(!c.list.length){L.push("R"+(i+1)+": no tips");continue}
+    L.push("R"+(i+1)+": "+c.list.slice(0,6).map(function(x){return x.h+(x.tie?"*":"")}).join(" ")+(c.scr.length?"  (scr "+c.scr.join(",")+")":""));
+    var rt=resText(i," ");if(rt)L.push("   Result: "+rt);
+    TIPSTERS.forEach(function(n,t){
+      L.push("   "+n+": "+data[i].tips[t].map(function(x){var v=pickVal(x);return v?(c.scr.indexOf(v)>-1?"("+v+")":v):"-"}).join(" "));
+    });
+  }
+  L.push("* = tie on points, check odds. (n) = scratched. 4th number is emergency.");
+  return L.join("\n");
+}
+function renderSummary(){
+  var h='<div class="card noprint"><h2>All races</h2><div class="row"><button class="r" id="cpS" data-l="Copy summary">Copy summary</button><button class="r" id="prt" data-l="Print / PDF">Print / PDF</button></div><div class="mut" style="margin-top:8px">If Print does nothing: Safari Share, Print, pinch out on the preview to make a PDF, then Share, Save to Files.</div></div>';
+  h+='<div class="card" style="margin-top:10px"><h2>Rebel26 final selections</h2>';
+  for(var i=0;i<RACES;i++){
+    var c=compute(data[i]);
+    h+='<div style="padding:8px 0;border-top:1px solid var(--line)"><div class="sr"><b>R'+(i+1)+'</b>';
+    if(!c.list.length){h+='<span class="mut">no tips</span></div></div>';continue}
+    h+='<span class="final">'+c.list.slice(0,6).map(function(x){return x.h+(x.tie?'<span class="badge">TIE</span>':'')}).join(" ")+'</span></div>';
+    h+='<div class="pl">'+c.list.map(function(x){return x.h+" ("+x.p+(x.o!==null?" @ "+esc(data[i].odds[x.h]):"")+")"}).join(", ")+(c.scr.length?" | scratched: "+c.scr.join(", "):"")+'</div>'+resLine(i)+punterTable(i,c)+'</div>';
+  }
+  h+='</div>';
+  var bk=JSON.stringify(data);
+  h+='<div class="card noprint"><h2>Backup</h2><div class="mut" style="margin-bottom:6px">Copy this and paste it into Notes or email it to yourself after each meeting.</div><button class="r" id="cpB" data-l="Copy backup">Copy backup</button><textarea id="bk" rows="3" readonly style="margin-top:8px"></textarea></div>';
+  h+='<div class="card noprint"><h2>Restore</h2><div class="mut" style="margin-bottom:6px">Paste a backup here. This replaces everything currently on this device.</div><textarea id="rs" rows="3" placeholder="Paste backup"></textarea><button class="r" id="rsb" style="margin-top:8px">Restore from backup</button><div class="msg" id="rsm"></div></div>';
+  document.getElementById("main").innerHTML=h;
+  var ta=document.getElementById("bk");ta.value=bk;ta.onfocus=function(){ta.select()};
+  var cs=document.getElementById("cpS");cs.onclick=function(){copyText(summaryText(),cs)};
+  document.getElementById("cpB").onclick=function(e){copyText(bk,e.target)};
+  document.getElementById("prt").onclick=function(){try{window.print()}catch(e){}};
+  document.getElementById("rsb").onclick=function(){
+    var m=document.getElementById("rsm");
+    try{
+      var d=JSON.parse(document.getElementById("rs").value.trim());
+      if(!Array.isArray(d)||d.length!==RACES||!d.every(function(r){return r&&Array.isArray(r.tips)&&r.tips.length===TIPSTERS.length}))throw 0;
+      if(!confirm("Replace all current data with this backup?"))return;
+      d.forEach(function(r){if(!r.res)r.res=["","",""]});data=d;save();renderSummary();
+    }catch(e){m.textContent="That doesn't look like a valid backup."}
+  };
+  renderTabs();
+}
+
+function resVals(r){return (r.res||["","",""]).map(pickVal)}
+function resText(i,sep){var rv=resVals(data[i]);return rv.every(Boolean)?rv.join(sep):""}
+function resLine(i){var t=resText(i," - ");return t?'<div class="pl"><b>Result: '+t+'</b></div>':""}
+function liveTips(r,t){
+  var scr=nums(r.scr),seen={},out=[];
+  r.tips[t].forEach(function(x){var v=pickVal(x);if(v&&!seen[v]){seen[v]=1;out.push(v)}});
+  return out.filter(function(p){return scr.indexOf(p)<0}).slice(0,3);
+}
+function scoreRace(r,t){
+  var rv=resVals(r);
+  if(rv.some(function(x){return !x}))return null;
+  var live=liveTips(r,t);
+  var hits=live.filter(function(p){return rv.indexOf(p)>-1}).length;
+  var exact=live.length===3&&live[0]===rv[0]&&live[1]===rv[1]&&live[2]===rv[2];
+  return{pts:exact?6:(hits===3?4:hits),hits:hits,exact:exact};
+}
+function renderRpts(){
+  var el=document.getElementById("rpts");if(!el)return;
+  var r=data[cur],rv=resVals(r);
+  if(rv.some(function(x){return !x})){el.innerHTML='<div class="mut" style="margin-top:6px">Enter all three place getters to score the punters.</div>';return}
+  var dup=rv.filter(function(x,i){return rv.indexOf(x)!==i}).length;
+  var h='<table class="pt" style="margin-top:8px"><tr><th>Punter</th><th>Live picks</th><th>Pts</th></tr>';
+  TIPSTERS.forEach(function(n,t){
+    var sc=scoreRace(r,t),live=liveTips(r,t);
+    h+='<tr><td>'+n+'</td><td>'+(live.map(function(p){return rv.indexOf(p)>-1?'<b>'+p+'</b>':p}).join(" ")||"·")+'</td><td><b>'+sc.pts+'</b>'+(sc.exact?" ★":"")+'</td></tr>';
+  });
+  h+='</table>'+(dup?'<div class="msg">Same horse entered twice in the results.</div>':'');
+  el.innerHTML=h;
+}
+function board(){
+  var b=TIPSTERS.map(function(n,t){
+    var tot=0,per=[];
+    for(var i=0;i<RACES;i++){var sc=scoreRace(data[i],t);per.push(sc);if(sc)tot+=sc.pts}
+    return{n:n,t:t,tot:tot,per:per};
+  });
+  b.sort(function(a,c){return c.tot-a.tot||a.t-c.t});
+  b.forEach(function(x,i){var f=0;while(b[f].tot!==x.tot)f++;x.rank=f+1;x.shared=b.some(function(y){return y!==x&&y.tot===x.tot})});
+  return b;
+}
+function racesScored(){var n=0;for(var i=0;i<RACES;i++)if(resText(i," "))n++;return n}
+function boardText(){
+  var b=board(),L=["REBEL26 LEADERBOARD ("+racesScored()+" race"+(racesScored()===1?"":"s")+" scored)"];
+  b.forEach(function(x){L.push(x.rank+(x.shared?"=":"")+". "+x.n+" "+x.tot)});
+  return L.join("\n");
+}
+function renderBoard(){
+  var b=board(),n=racesScored();
+  var h='<div class="card noprint"><h2>Leaderboard</h2><div class="row"><button class="r" id="cpL" data-l="Copy leaderboard">Copy leaderboard</button><button class="r" id="prt" data-l="Print / PDF">Print / PDF</button></div></div>';
+  h+='<div class="card"><h2>Rebel26 leaderboard'+(n?' after '+n+' race'+(n>1?'s':''):'')+'</h2>';
+  if(!n){h+='<div class="mut">No results yet. Enter the first three past the post at the bottom of each race tab.</div></div>'}
+  else{
+    h+='<div class="sc"><table class="bd"><tr><th>Pos</th><th>Punter</th><th>Pts</th>';
+    for(var i=0;i<RACES;i++)h+='<th>R'+(i+1)+'</th>';
+    h+='</tr>';
+    b.forEach(function(x){
+      h+='<tr><td>'+x.rank+(x.shared?"=":"")+'</td><td>'+x.n+'</td><td class="t">'+x.tot+'</td>'+x.per.map(function(sc){return '<td'+(sc&&sc.exact?' class="me"':'')+'>'+(sc?sc.pts+(sc.exact?"★":""):"·")+'</td>'}).join("")+'</tr>';
+    });
+    h+='</table></div><div class="pl">1 pt per pick in the first three, 4 for all three, 6 (★) for all three in exact order. Equal totals share a position. · = no result yet.</div></div>';
+  }
+  document.getElementById("main").innerHTML=h;
+  var cl=document.getElementById("cpL");cl.onclick=function(){copyText(boardText(),cl)};
+  document.getElementById("prt").onclick=function(){try{window.print()}catch(e){}};
+  renderTabs();
+}
+renderRace();
+</script>
+</body>
+</html>
