@@ -103,11 +103,12 @@ function compute(r){
   var list=Object.keys(pts).map(function(h){return{h:h,p:pts[h],t:tippers[h],f:firsts[h]||0,o:oddsVal(r.odds[h])}});
   list.sort(function(a,b){
     if(b.p!==a.p)return b.p-a.p;
+    if(b.t!==a.t)return b.t-a.t;
     if(a.o!==null&&b.o!==null&&a.o!==b.o)return a.o-b.o;
     return parseInt(a.h,10)-parseInt(b.h,10);
   });
   list.forEach(function(x){
-    x.tie=list.some(function(y){return y!==x&&y.p===x.p&&(x.o===null||y.o===null||x.o===y.o)});
+    x.tie=list.some(function(y){return y!==x&&y.p===x.p&&y.t===x.t&&(x.o===null||y.o===null||x.o===y.o)});
   });
   return{list:list,issues:issues,scr:scr};
 }
@@ -159,8 +160,8 @@ function renderOut(){
   var h='<div class="card"><h2>Race '+(cur+1)+' final selections (top 6)</h2><div class="final">'+top.map(function(x){return x.h}).join(" ")+'</div>';
   if(c.scr.length)h+='<div class="mut">Scratched: '+c.scr.join(", ")+'</div>';
   var ties=c.list.slice(0,8).some(function(x,i){return x.tie&&i<7&&(i<6||c.list[5]&&x.p===c.list[5].p)});
-  var cutTie=c.list.length>6&&c.list[5].p===c.list[6].p&&(c.list[5].o===null||c.list[6].o===null);
-  if(cutTie)h+='<div class="msg">⚠ Tie across the cut line. Enter odds for the tied horses below to settle it.</div>';
+  var cutTie=c.list.length>6&&c.list[5].p===c.list[6].p&&c.list[5].t===c.list[6].t&&(c.list[5].o===null||c.list[6].o===null);
+  if(cutTie)h+='<div class="msg">⚠ Tie on points and tips across the cut line. Enter odds for the tied horses below to settle it.</div>';
   else if(top.some(function(x){return x.tie}))h+='<div class="msg">Ties in the top 6 are ordered by odds where entered; enter odds to fix the order.</div>';
   if(c.list.length<6)h+='<div class="msg">Only '+c.list.length+' horses tipped so far.</div>';
   c.issues.forEach(function(m){h+='<div class="msg">⚠ '+esc(m)+'</div>'});
@@ -170,7 +171,7 @@ function renderOut(){
      +'<td><input inputmode="decimal" placeholder="odds" data-h="'+x.h+'" value="'+esc(r.odds[x.h]||"")+'"></td>'
      +'<td>'+(x.tie?'<span class="badge">TIE</span>':'')+'</td></tr>';
   });
-  h+='</table><div class="mut" style="margin-top:8px">Odds as 4.5 or 7/2. Shorter price wins a tie on points.</div></div>';
+  h+='</table><div class="mut" style="margin-top:8px">Odds as 4.5 or 7/2. Order is points, then number of tips, then shorter price.</div></div>';
   out.innerHTML=h;
   [].forEach.call(out.querySelectorAll("input[data-h]"),function(inp){
     inp.onchange=function(){data[cur].odds[inp.dataset.h]=inp.value;save();renderOut()};
@@ -201,7 +202,7 @@ function summaryText(){
       L.push("   "+n+": "+data[i].tips[t].map(function(x){var v=pickVal(x);return v?(c.scr.indexOf(v)>-1?"("+v+")":v):"-"}).join(" "));
     });
   }
-  L.push("* = tie on points, check odds. (n) = scratched. 4th number is emergency.");
+  L.push("* = tied on points and tips, check odds. (n) = scratched. 4th number is emergency.");
   return L.join("\n");
 }
 function renderSummary(){
