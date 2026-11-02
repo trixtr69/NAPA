@@ -6,9 +6,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <style>
-:root{--bg:#f5f6f8;--card:#fff;--text:#14171a;--mut:#6b7280;--line:#d9dde3;--acc:#0b6b3a;--accbg:#e3f4ea;--warn:#b45309;--warnbg:#fef3c7;--out:#9ca3af}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1013;--card:#181b20;--text:#eef0f2;--mut:#98a0ab;--line:#2c3138;--acc:#4ade80;--accbg:#12301f;--warn:#fbbf24;--warnbg:#3a2c0a;--out:#6b7280}}
-:root[data-theme="dark"]{--bg:#0e1013;--card:#181b20;--text:#eef0f2;--mut:#98a0ab;--line:#2c3138;--acc:#4ade80;--accbg:#12301f;--warn:#fbbf24;--warnbg:#3a2c0a;--out:#6b7280}
+:root{--onacc:#fff;--bg:#f5f6f8;--card:#fff;--text:#14171a;--mut:#6b7280;--line:#d9dde3;--acc:#0b6b3a;--accbg:#e3f4ea;--warn:#b45309;--warnbg:#fef3c7;--out:#9ca3af}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--onacc:#06210f;--bg:#0e1013;--card:#181b20;--text:#eef0f2;--mut:#98a0ab;--line:#2c3138;--acc:#4ade80;--accbg:#12301f;--warn:#fbbf24;--warnbg:#3a2c0a;--out:#6b7280}}
+:root[data-theme="dark"]{--onacc:#06210f;--bg:#0e1013;--card:#181b20;--text:#eef0f2;--mut:#98a0ab;--line:#2c3138;--acc:#4ade80;--accbg:#12301f;--warn:#fbbf24;--warnbg:#3a2c0a;--out:#6b7280}
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--bg);color:var(--text);font:16px/1.4 -apple-system,system-ui,Helvetica,Arial,sans-serif;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
@@ -17,7 +17,7 @@ h1{font-size:20px;margin:0}
 .sub{color:var(--mut);font-size:13px}
 .tabs{display:flex;gap:6px;overflow-x:auto;padding:8px 14px;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5;-webkit-overflow-scrolling:touch}
 .tab{flex:0 0 auto;min-width:44px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--text);font-size:16px;font-weight:600}
-.tab.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.tab.on{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
 .tab.done::after{content:" ✓";font-weight:400}
 main{padding:0 14px 40px;max-width:640px;margin:0 auto}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0}
@@ -46,6 +46,9 @@ textarea{width:100%;font:12px/1.3 ui-monospace,Menlo,monospace;padding:8px;borde
 .sr .final{font-size:22px}
 .pl{font-size:12px;color:var(--mut);margin-top:4px}
 .row button{margin-right:8px}
+.seg{display:flex;gap:6px;align-items:center;margin-top:8px}
+.seg button{padding:7px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--text);font-size:15px;font-weight:600}
+.seg button.on{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
 .sc{overflow-x:auto}
 .bd{width:100%;font-size:14px}
 .bd th,.bd td{padding:7px 6px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap}
@@ -66,13 +69,16 @@ textarea{width:100%;font:12px/1.3 ui-monospace,Menlo,monospace;padding:8px;borde
 </style>
 </head>
 <body>
-<header><h1>Rebel26 Tips</h1><div class="sub">3 / 2 / 1 points. 4th tip is the emergency, used only after scratchings.</div></header>
+<header><h1>Rebel26 Tips</h1><div class="sub">3 / 2 / 1 points. 4th tip is the emergency, used only after scratchings.</div><div class="seg noprint"><span class="sub">Final selections:</span><button data-n="6">Top 6</button><button data-n="7">Top 7</button></div></header>
 <div class="tabs" id="tabs"></div>
 <main id="main"></main>
 <script>
 var TIPSTERS=["Cliff","Dick","John","Pat","Rick","Shane"];
 var RACES=10, PTS=[3,2,1], KEY="rebel26tips_v1";
-var data=load(), cur=0;
+var data=load(), cur=0, N=loadN();
+function loadN(){try{var v=parseInt(localStorage.getItem(KEY+"_n"),10);if(v===6||v===7)return v}catch(e){}return 6}
+function syncSeg(){[].forEach.call(document.querySelectorAll(".seg button"),function(b){b.className=(parseInt(b.dataset.n,10)===N)?"on":""})}
+function setN(v){N=v;try{localStorage.setItem(KEY+"_n",String(v))}catch(e){}syncSeg();renderRace()}
 
 function blank(){var r=[];for(var i=0;i<RACES;i++){r.push({tips:TIPSTERS.map(function(){return["","","",""]}),scr:"",odds:{},res:["","",""]})}return r}
 function load(){try{var s=localStorage.getItem(KEY);if(s){var d=JSON.parse(s);if(d&&d.length===RACES){d.forEach(function(r){if(!r.res)r.res=["","",""]});return d}}}catch(e){}return blank()}
@@ -156,18 +162,17 @@ function renderRace(){
 function renderOut(){
   var r=data[cur],c=compute(r),out=document.getElementById("out");
   if(!c.list.length){out.innerHTML='<div class="card"><h2>Final selections</h2><div class="mut">Enter tips above.</div></div>';return}
-  var top=c.list.slice(0,6);
-  var h='<div class="card"><h2>Race '+(cur+1)+' final selections (top 6)</h2><div class="final">'+top.map(function(x){return x.h}).join(" ")+'</div>';
+  var top=c.list.slice(0,N);
+  var h='<div class="card"><h2>Race '+(cur+1)+' final selections (top '+N+')</h2><div class="final">'+top.map(function(x){return x.h}).join(" ")+'</div>';
   if(c.scr.length)h+='<div class="mut">Scratched: '+c.scr.join(", ")+'</div>';
-  var ties=c.list.slice(0,8).some(function(x,i){return x.tie&&i<7&&(i<6||c.list[5]&&x.p===c.list[5].p)});
-  var cutTie=c.list.length>6&&c.list[5].p===c.list[6].p&&c.list[5].t===c.list[6].t&&(c.list[5].o===null||c.list[6].o===null);
+  var cutTie=c.list.length>N&&c.list[N-1].p===c.list[N].p&&c.list[N-1].t===c.list[N].t&&(c.list[N-1].o===null||c.list[N].o===null);
   if(cutTie)h+='<div class="msg">⚠ Tie on points and tips across the cut line. Enter odds for the tied horses below to settle it.</div>';
-  else if(top.some(function(x){return x.tie}))h+='<div class="msg">Ties in the top 6 are ordered by odds where entered; enter odds to fix the order.</div>';
-  if(c.list.length<6)h+='<div class="msg">Only '+c.list.length+' horses tipped so far.</div>';
+  else if(top.some(function(x){return x.tie}))h+='<div class="msg">Ties in the top '+N+' are ordered by odds where entered; enter odds to fix the order.</div>';
+  if(c.list.length<N)h+='<div class="msg">Only '+c.list.length+' horses tipped so far.</div>';
   c.issues.forEach(function(m){h+='<div class="msg">⚠ '+esc(m)+'</div>'});
   h+='</div><div class="card"><h2>Ranking</h2><table class="res"><tr><th>Horse</th><th>Pts</th><th>Tips</th><th>Odds</th><th></th></tr>';
   c.list.forEach(function(x,i){
-    h+='<tr class="'+(i<6?"in":"")+(i===5&&c.list.length>6?" cut":"")+'"><td class="h">'+x.h+'</td><td>'+x.p+'</td><td>'+x.t+'</td>'
+    h+='<tr class="'+(i<N?"in":"")+(i===N-1&&c.list.length>N?" cut":"")+'"><td class="h">'+x.h+'</td><td>'+x.p+'</td><td>'+x.t+'</td>'
      +'<td><input inputmode="decimal" placeholder="odds" data-h="'+x.h+'" value="'+esc(r.odds[x.h]||"")+'"></td>'
      +'<td>'+(x.tie?'<span class="badge">TIE</span>':'')+'</td></tr>';
   });
@@ -196,7 +201,7 @@ function summaryText(){
   for(var i=0;i<RACES;i++){
     var c=compute(data[i]);
     if(!c.list.length){L.push("R"+(i+1)+": no tips");continue}
-    L.push("R"+(i+1)+": "+c.list.slice(0,6).map(function(x){return x.h+(x.tie?"*":"")}).join(" ")+(c.scr.length?"  (scr "+c.scr.join(",")+")":""));
+    L.push("R"+(i+1)+": "+c.list.slice(0,N).map(function(x){return x.h+(x.tie?"*":"")}).join(" ")+(c.scr.length?"  (scr "+c.scr.join(",")+")":""));
     var rt=resText(i," ");if(rt)L.push("   Result: "+rt);
     TIPSTERS.forEach(function(n,t){
       L.push("   "+n+": "+data[i].tips[t].map(function(x){var v=pickVal(x);return v?(c.scr.indexOf(v)>-1?"("+v+")":v):"-"}).join(" "));
@@ -212,7 +217,7 @@ function renderSummary(){
     var c=compute(data[i]);
     h+='<div style="padding:8px 0;border-top:1px solid var(--line)"><div class="sr"><b>R'+(i+1)+'</b>';
     if(!c.list.length){h+='<span class="mut">no tips</span></div></div>';continue}
-    h+='<span class="final">'+c.list.slice(0,6).map(function(x){return x.h+(x.tie?'<span class="badge">TIE</span>':'')}).join(" ")+'</span></div>';
+    h+='<span class="final">'+c.list.slice(0,N).map(function(x){return x.h+(x.tie?'<span class="badge">TIE</span>':'')}).join(" ")+'</span></div>';
     h+='<div class="pl">'+c.list.map(function(x){return x.h+" ("+x.p+(x.o!==null?" @ "+esc(data[i].odds[x.h]):"")+")"}).join(", ")+(c.scr.length?" | scratched: "+c.scr.join(", "):"")+'</div>'+resLine(i)+punterTable(i,c)+'</div>';
   }
   h+='</div>';
@@ -300,6 +305,8 @@ function renderBoard(){
   document.getElementById("prt").onclick=function(){try{window.print()}catch(e){}};
   renderTabs();
 }
+[].forEach.call(document.querySelectorAll(".seg button"),function(b){b.onclick=function(){setN(parseInt(b.dataset.n,10))}});
+syncSeg();
 renderRace();
 </script>
 </body>
