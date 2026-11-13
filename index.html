@@ -45,6 +45,8 @@ textarea{width:100%;font:12px/1.3 ui-monospace,Menlo,monospace;padding:8px;borde
 .sr{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .sr .final{font-size:22px}
 .pl{font-size:12px;color:var(--mut);margin-top:4px}
+.saddle{font-size:20px;font-weight:700;margin-top:6px;word-spacing:6px}
+.saddle span{font-size:12px;font-weight:600;color:var(--mut);word-spacing:0;text-transform:uppercase;letter-spacing:.5px;display:block;margin:0 0 2px}
 .row button{margin-right:8px}
 .seg{display:flex;gap:6px;align-items:center;margin-top:8px}
 .seg button{padding:7px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--text);font-size:15px;font-weight:600}
@@ -163,7 +165,7 @@ function renderOut(){
   var r=data[cur],c=compute(r),out=document.getElementById("out");
   if(!c.list.length){out.innerHTML='<div class="card"><h2>Final selections</h2><div class="mut">Enter tips above.</div></div>';return}
   var top=c.list.slice(0,N);
-  var h='<div class="card"><h2>Race '+(cur+1)+' final selections (top '+N+')</h2><div class="final">'+top.map(function(x){return x.h}).join(" ")+'</div>';
+  var h='<div class="card"><h2>Race '+(cur+1)+' final selections (top '+N+')</h2><div class="final">'+top.map(function(x){return x.h}).join(" ")+'</div><div class="saddle"><span>By saddle cloth</span>'+numOrder(top)+'</div>';
   if(c.scr.length)h+='<div class="mut">Scratched: '+c.scr.join(", ")+'</div>';
   var cutTie=c.list.length>N&&c.list[N-1].p===c.list[N].p&&c.list[N-1].t===c.list[N].t&&(c.list[N-1].o===null||c.list[N].o===null);
   if(cutTie)h+='<div class="msg">⚠ Tie on points and tips across the cut line. Enter odds for the tied horses below to settle it.</div>';
@@ -188,6 +190,7 @@ function copyText(t,btn){
   function fb(){try{var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();var ok=document.execCommand("copy");document.body.removeChild(ta);done(ok)}catch(e){done(false)}}
   try{navigator.clipboard.writeText(t).then(function(){done(true)},fb)}catch(e){fb()}
 }
+function numOrder(list){return list.map(function(x){return parseInt(x.h,10)}).sort(function(a,b){return a-b}).join(" ")}
 function pickVal(x){var n=parseInt(x,10);return isNaN(n)?"":String(n)}
 function punterTable(i,c){
   var h='<table class="pt"><tr><th></th><th>1st</th><th>2nd</th><th>3rd</th><th>Emg</th></tr>';
@@ -202,6 +205,7 @@ function summaryText(){
     var c=compute(data[i]);
     if(!c.list.length){L.push("R"+(i+1)+": no tips");continue}
     L.push("R"+(i+1)+": "+c.list.slice(0,N).map(function(x){return x.h+(x.tie?"*":"")}).join(" ")+(c.scr.length?"  (scr "+c.scr.join(",")+")":""));
+    L.push("   By saddle cloth:");L.push("   "+numOrder(c.list.slice(0,N)));
     var rt=resText(i," ");if(rt)L.push("   Result: "+rt);
     TIPSTERS.forEach(function(n,t){
       L.push("   "+n+": "+data[i].tips[t].map(function(x){var v=pickVal(x);return v?(c.scr.indexOf(v)>-1?"("+v+")":v):"-"}).join(" "));
@@ -218,7 +222,7 @@ function renderSummary(){
     h+='<div style="padding:8px 0;border-top:1px solid var(--line)"><div class="sr"><b>R'+(i+1)+'</b>';
     if(!c.list.length){h+='<span class="mut">no tips</span></div></div>';continue}
     h+='<span class="final">'+c.list.slice(0,N).map(function(x){return x.h+(x.tie?'<span class="badge">TIE</span>':'')}).join(" ")+'</span></div>';
-    h+='<div class="pl">'+c.list.map(function(x){return x.h+" ("+x.p+(x.o!==null?" @ "+esc(data[i].odds[x.h]):"")+")"}).join(", ")+(c.scr.length?" | scratched: "+c.scr.join(", "):"")+'</div>'+resLine(i)+punterTable(i,c)+'</div>';
+    h+='<div class="pl"><b>By saddle cloth</b></div><div class="pl"><b>'+numOrder(c.list.slice(0,N))+'</b></div><div class="pl">'+c.list.map(function(x){return x.h+" ("+x.p+(x.o!==null?" @ "+esc(data[i].odds[x.h]):"")+")"}).join(", ")+(c.scr.length?" | scratched: "+c.scr.join(", "):"")+'</div>'+resLine(i)+punterTable(i,c)+'</div>';
   }
   h+='</div>';
   var bk=JSON.stringify(data);
